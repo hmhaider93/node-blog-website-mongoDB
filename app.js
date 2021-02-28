@@ -33,18 +33,28 @@ const Post = mongoose.model("Post",postsSchema);
 //   body:[]
 // }
 
-app.get('/posts/:title', function(req,res){
+app.get('/posts/:id', function(req,res){
 
-    let postTitle = "";
-    let postBody = "";
-    posts.forEach(function(post){
-      if(lodash.lowerCase(post.title) === lodash.lowerCase(req.params.title)){
-        console.log("Match Found");
-        postTitle = post.title;
-        postBody = post.body;
-        res.render("post", {postTitle:post.title,postBody:post.body});
-      };
-    });
+  Post.findById(req.params.id.trim(),function(err,post){
+    if(err) console.log(err);
+    else{
+      res.render("post", {postTitle:post.title,postBody:post.body});
+    }
+
+  });
+
+  //OLD CODE:
+    // let postTitle = "";
+    // let postBody = "";
+    // posts.forEach(function(post){
+    //   if(lodash.lowerCase(post.title) === lodash.lowerCase(req.params.title)){
+    //     console.log("Match Found");
+    //     postTitle = post.title;
+    //     postBody = post.body;
+    //     res.render("post", {postTitle:post.title,postBody:post.body});
+    //   };
+    // });
+    // *****
     // console.log(req.params.title);
     // if(postTitle !== ""){
       
@@ -87,7 +97,11 @@ app.post('/',(req,res) =>{
     body: req.body.postBody
   });
 
-  post.save();
+  post.save((err)=>{
+    if(!err){
+      res.redirect('/');
+    }
+  });
 
   // let post ={
   //   title: req.body.postTitle,
@@ -97,7 +111,7 @@ app.post('/',(req,res) =>{
   // post.title.push(req.body.postTitle);
   // post.body.push(req.body.postBody);
   // console.log(posts);
-  res.redirect('/');
+ 
 });
 
 

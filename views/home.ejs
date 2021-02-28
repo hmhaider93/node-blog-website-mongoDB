@@ -2,9 +2,9 @@
 <h1>Hello</h1>
 <p><%= homeSContent %> </p>
 <% posts.forEach(function(post){ %>
-    <h2><a href="/posts/<%= post.title %>"><%= post.title %></a></h2>
+    <h2><a href="/posts/<%= post._id %>"><%= post.title %></a></h2>
     <p><%= post.body.substring(0,100) + " ..." %> 
-    <a href="/posts/<%= post.title %>">Read More</a>
+    <a href="/posts/<%= post._id %>">Read More</a>
     </p>
     <% }); %>
 
