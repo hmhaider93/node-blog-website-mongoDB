@@ -2,6 +2,7 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require('mongoose');
 const ejs = require("ejs");
 const lodash = require("lodash");
 
@@ -16,12 +17,21 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+// Setting up Mongoose:
+mongoose.connect("mongodb://localhost:27017/blogpostDB",{useUnifiedTopology:true,useNewUrlParser:true});
 
-let posts = [];
-let post = {
-  title:[],
-  body:[]
+const postsSchema = {
+  title: String,
+  body: String
 }
+
+const Post = mongoose.model("Post",postsSchema);
+
+// let posts = [];
+// let post = {
+//   title:[],
+//   body:[]
+// }
 
 app.get('/posts/:title', function(req,res){
 
@@ -46,7 +56,15 @@ app.get('/posts/:title', function(req,res){
 
 
 app.get('/',function(req,res){
-    res.render('home',{homeSContent: homeStartingContent,posts:posts});
+
+    Post.find((err,posts)=>{
+      if(err) console.log(err);
+      else{
+        res.render('home',{homeSContent: homeStartingContent,posts:posts});
+      }
+    });
+
+   
 });
 
 app.get('/about', function(req,res){
@@ -62,11 +80,20 @@ app.get('/compose',(req,res) =>{
 });
 
 app.post('/',(req,res) =>{
-  let post ={
+
+
+  let post = new Post({
     title: req.body.postTitle,
     body: req.body.postBody
-  }
-  posts.push(post);
+  });
+
+  post.save();
+
+  // let post ={
+  //   title: req.body.postTitle,
+  //   body: req.body.postBody
+  // }
+  // posts.push(post);
   // post.title.push(req.body.postTitle);
   // post.body.push(req.body.postBody);
   // console.log(posts);
